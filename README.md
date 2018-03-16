@@ -16,6 +16,6 @@ Reminder: You can access the console log via F12 to see potential error messages
 ## To Do 
 * More testing of smart contracts.
 * Improve front end mechanics. 
-* Add use of ERC20 for ticket purchase as volatility of Ether disincentivises spending it on purchases.  
+* Extend smart contract design to handle use of ERC20 for ticket purchase as volatility of Ether disincentivises spending it on purchases. 
 * Improve work flow of ticket purchase for multiple buyers/users. 
 * Design mechanics around secondary market for tickets with contributions back to ticket seller/artist. 
