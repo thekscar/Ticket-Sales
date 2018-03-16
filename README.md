@@ -1,7 +1,7 @@
 # Ticket-Sales
 A ticket sales application for events powered by smart contracts on Ethereum. (Work in progress). 
 
-This application uses smart contracts on Ethereum to model ticket sales to an event. In this design, an application manager can approve a ticket seller or vendor. The ticket seller can then use an ERC721 factory to produce a specific ERC721 contract for tickets sales to a particular event. Tickets were modeled this way as ERC721 can contain metadata for each specific "ticket" or token. Once an event is created by a ticket seller, ticket buyers are able to purchase tickets/tokens.
+This application uses smart contracts on Ethereum to model ticket sales to an event. In this design, an application manager can approve a ticket seller or vendor. The ticket seller can then use an ERC721 factory to produce a specific ERC721 contract for tickets sales to a particular event. Once an event is created by a ticket seller, ticket buyers are able to purchase tickets/tokens.
 
 To launch this application, ensure Truffle and [Ganache](http://truffleframework.com/ganache/) are installed. [Windows Truffle Install Instructions Here](http://truffleframework.com/tutorials/how-to-install-truffle-and-testrpc-on-windows-for-blockchain-development) 
 
@@ -14,6 +14,7 @@ Then, using Chrome or [Brave](https://brave.com/), with [MetaMask](https://metam
 Reminder: You can access the console log via F12 to see potential error messages.
 
 ## To Do 
+* More testing of smart contracts.
 * Improve front end mechanics. 
 * Add use of ERC20 for ticket purchase as volatility of Ether disincentivises spending it on purchases.  
 * Improve work flow of ticket purchase for multiple buyers/users. 
