@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ticket Sales Demo</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <script src="./app.js"></script>
+</head>
+<body>
+  <h1>Ticket Sales On Ethereum</h1>
+  <h2>Demo Example</h2>
+  <h3>Application Manager Transactions</h3>
+  <label for="sellerToApprove">Address to Approve:</label><input type="text" id="sellerToApprove" placeholder="e.g., 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"></input>
+  <button id="approve" onclick="App.approveSeller()">Approve Ticket Seller</button>
+  <span id="approvalStatus"></span>
+  <br></br>
+  <div id = "newTicketSellerRequests">
+    <table id="theTicketSellers" border="1" style="width:100%">
+      <tr>
+        <th>Ticket Sellers To Approve By Address</th>
+      </tr>
+      <tr id="noSellers">
+        <td> No Requests Yet </td>
+      </tr>
+    </table>
+  </div>
+  <br></br>
+  <h3>Ticket Seller Transactions</h3>
+  <button id="request" onclick="App.sellerRequest()">Request Ticket Seller Approval</button>
+  <span id="requestStatus"></span>
+  <br></br>
+  <label for="eventName">Event Name:</label><input type="text" id="eventName" placeholder="e.g., Taylor Swift"></input><br>
+  <label for="eventLocation">Event Location:</label><input type="text" id="eventLocation" placeholder="e.g., Houston, TX"></input><br>
+  <label for="eventSym">Event Symbol:</label><input type="text" id="eventSym" placeholder="e.g., TSTX"></input><br>
+  <label for="totalTickets">Total Tickets Available:</label><input type="text" id="totalTickets" placeholder="e.g., 5,000"></input><br>
+  <label for="ticketPrice">Ticket Price (Wei):</label><input type="text" id="ticketPrice" placeholder="e.g., 500"></input><br>
+  <br>
+  <button id="theevent" onclick="App.createEvent()">Create An Event</button>
+  <span id="eventStatus"></span>
+  <br><br>
+  <div id = "newEvent">
+    <table id="theEvents" border="1" style="width:100%">
+      <tr>
+        <th>Address of Event</th>
+        <th>Name of Event</th>
+        <th>Location of Event</th>
+        <th>Price of Ticket</th>
+      </tr>
+      <tr id="noEvents">
+        <td>No Events Yet</td>
+        <td>--</td>
+        <td>--</td>
+        <td>--</td>
+      </tr>
+    </table>
+  </div>
+  <br></br>
+  <h3>Buyer Transactions</h3>
+  <label for="eventPurchase">Event to Purchase:</label><input type="text" id="eventPurchase" placeholder="e.g., 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"></input>
+  <button id="buy" onclick="App.buyTicket()">Buy Ticket to Event</button>
+  <span id="statusTicket"></span>
+
+  <h4 class="account">Your account is: <span id="theaccount"></span></h4>
+  <h4 class="balance">Your balance is: <span id="thebalance"></span> ETH</h4>
+  <h4 class="role">Your role is: <span id="yourrole"></span></h4>
+  
+
+</body>
+</html>

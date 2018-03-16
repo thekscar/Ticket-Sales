@@ -1,0 +1,97 @@
+body {
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 10%;
+  font-family: "Open Sans", sans-serif;
+  background-color: WhiteSmoke; 
+}
+
+label {
+  display: inline-block;
+  width: 100px;
+}
+
+input {
+  width: 500px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+button {
+  font-size: 12px;
+  padding: 5px;
+}
+
+h1 {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  color: teal; 
+}
+
+h2 {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 0px;
+  margin-bottom: 5px;
+  color: orange;
+  font-size: 32px;
+}
+
+h3 {
+  font-weight: normal;
+  margin-top: 1px; 
+  color: cadetblue;
+  font-size: 24px;
+}
+
+.black {
+  color: black;
+}
+
+#balance {
+  color: black;
+}
+
+.hint {
+  color: #666;
+}
+
+.account {
+  position: absolute; 
+  top: 0; 
+  left: 10px; 
+  width: 400px; 
+  text-align: left; 
+}
+
+.balance {
+  position: absolute; 
+  top: 40px; 
+  left: 10px; 
+  width: 400px; 
+  text-align: left; 
+}
+
+.role {
+  position: absolute; 
+  top: 65px; 
+  left: 10px;
+  text-align: left; 
+}
+
+.change-account {
+  position: absolute; 
+  top: 120px; 
+  left: 10px;
+  text-align: left; 
+}
+
+
+
+h4 {
+  font-weight:normal; 
+  color: darkorange; 
+  font-size: 14px; 
+}
