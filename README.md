@@ -9,7 +9,7 @@ First, clone or copy this respositrory to your computer, and from the command wi
 
 Then, run `npm run dev`. Webpack will build and serve the application.
 
-Then, using Chrome or [Brave](https://brave.com/) with [MetaMask](https://metamask.io/) connect to your Ganache by connecting to http://localhost:7545, if this is your first time using MetaMask with Ganache you will need to create a Custom RPC for this. Then, use your 12 word mnemonic to connect to Ganache. Now, you can access http://localhost:8080/ to connect to the application. You can alternate roles using your various accounts - Application Manager (your coinbase account), Ticket Buyer, Ticket Seller (must request approval from Application Manager). You will see MetaMask only shows the first account from Ganache - in order to get additional Ganache accounts, select Create Account and accounts from Ganache will be pulled in deterministically. 
+Then, using Chrome or [Brave](https://brave.com/), with [MetaMask](https://metamask.io/) connect to your Ganache by connecting to http://localhost:7545. (If this is your first time using MetaMask with Ganache you will need to create a Custom RPC for this.) Then, use your 12 word mnemonic to connect to Ganache instance. Now, you can access http://localhost:8080/ to connect to the application. You can alternate roles through MetaMask - Application Manager (your coinbase account), Ticket Buyer, Ticket Seller (must request approval from Application Manager). You will see MetaMask only shows the first account from Ganache - in order to get additional Ganache accounts, select "Create Account" and accounts from Ganache will be pulled in deterministically. 
 
 Reminder: You can access the console log via F12 to see potential error messages.
 
