@@ -1,4 +1,4 @@
-# Ticket-Sales-on-Ethereum
+# Ticket-Sales
 A ticket sales application for events powered by smart contracts on Ethereum. (Work in progress). 
 
 This application uses smart contracts on Ethereum to model ticket sales to an event. In this design, an application manager (owner of the central hub smart contract) can approve a ticket seller or vendor. The ticket seller can then use an ERC721 factory to produce a specific ERC721 contract for tickets sales to a particular event. Tickets were modeled this way as ERC721 can contain metadata for each specific "ticket" or token. Once an event is created by a ticket seller, ticket buyers are able to purchase tickets/tokens.
@@ -17,3 +17,4 @@ Reminder: You can access the console log via F12 to see potential error messages
 * Improve front end mechanics. 
 * Add use of ERC20 for ticket purchase as volatility of Ether disincentivises spending it on purchases.  
 * Improve work flow of ticket purchase for multiple buyers/users. 
+* Design mechanics around secondary market for tickets with contributions back to ticket seller/artist. 
