@@ -13,7 +13,7 @@ Then, using Chrome or [Brave](https://brave.com/), with [MetaMask](https://metam
 
 Reminder: You can access the console log via F12 to see potential error messages.
 
-##To Do 
+## To Do 
 * Improve front end mechanics. 
 * Add use of ERC20 for ticket purchase as volatility of Ether disincentivises spending it on purchases.  
 * Improve work flow of ticket purchase for multiple buyers/users. 
