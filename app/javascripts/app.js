@@ -138,18 +138,11 @@ window.App = {
       hub = instance; 
       return hub.ticketSellerRequest({from:account, gas:200000})
     }).then(function(result){
-      console.log(result);
-      var log = result.logs[0];
-      var noSellers = document.getElementById("noSellers");
-      if (noSellers) {
-        noSellers.parentElement.removeChild(noSellers);
+      //Only start watching if not already. 
+      console.log("The ticket seller request event ", result);
+      if( document.getElementById("noSellers"){
+        self.watchTicketSellerRequest(); 
       }
-      var newTableRow = document.createElement("tr");
-      var newSellerRequest = document.createElement("td");
-      newSellerRequest.appendChild(document.createTextNode(log.args.requestedTicketSeller)); 
-      newTableRow.appendChild(newSellerRequest);
-      var tablenode = document.getElementById("newTicketSellerRequests");
-      tablenode.appendChild(newTableRow);
       self.setRequestStatus("Your request is confirmed, please wait for the application manager to approve.")
     }).catch(function(e){
       console.log(e);
@@ -198,38 +191,17 @@ window.App = {
     var eTotalTickets = parseInt(document.getElementById("totalTickets").value);
     var eTicketPrice = parseInt(document.getElementById("ticketPrice").value);
     self.setEventStatus("Please wait for confirmation...");
-    console.log(typeof eTotalTickets)
-    console.log(typeof eTicketPrice);
-    console.log(typeof eLocation)
-    console.log(typeof eSym)
-    console.log(typeof eName)
     console.log(account)
     console.log(TicketSalesHub.deployed())
     TicketSalesHub.deployed().then(function(instance){
       hub = instance;
       return hub.createEventSale(eName, eLocation, eSym, eTotalTickets, eTicketPrice, {from:account})
     }).then(function(result){
-      console.log(result)
-      var log = result.logs[0];
-      var noEvents = document.getElementById("noEvents");
-      if (noEvents) {
-        noEvents.parentElement.removeChild(noEvents);
+      console.log("The event created result ", result);
+      if( document.getElementById("noEvents"){
+        self.watchNewlyCreatedEvents(); 
       }
-      var newTableRow = document.createElement("tr");
-      var newEventAddress = document.createElement("td");
-      var newEventName = document.createElement("td");
-      var newEventLocation = document.createElement("td");
-      var newEventTicketPrice = document.createElement("td");
-      newEventAddress.appendChild(document.createTextNode(log.args.eventCreated));
-      newEventName.appendChild(document.createTextNode(log.args.eventName));
-      newEventLocation.appendChild(document.createTextNode(log.args.eventLocation));
-      newEventTicketPrice.appendChild(document.createTextNode(log.args.theTicketPrice)); 
-      newTableRow.appendChild(newEventAddress);
-      newTableRow.appendChild(newEventName);
-      newTableRow.appendChild(newEventLocation);
-      newTableRow.appendChild(newEventTicketPrice);
-      var tablenode = document.getElementById("theEvents");
-      tablenode.appendChild(newTableRow);
+      
       self.setEventStatus("Event has been confirmed and created.");
     }).catch(function(e){
       console.log(e);
@@ -254,6 +226,58 @@ window.App = {
       self.setTicketStatus("Ticket purchase confirmed.")
     }).catch(function(e){
       console.log(e);
+    })
+  }, 
+
+  watchTicketSellerRequest: function() {
+    TicketSalesHub.then(function(instance){
+      var event = instance.TicketSellerRequestEvent({fromBlock:0, toBlock:'latest'});
+      event.watch(function(error, result){
+          if (!error) {
+            var log = result.logs[0];
+            var noSellers = document.getElementById("noSellers");
+            if (noSellers) {
+              noSellers.parentElement.removeChild(noSellers);
+            }
+            var newTableRow = document.createElement("tr");
+            var newSellerRequest = document.createElement("td");
+            newSellerRequest.appendChild(document.createTextNode(log.args.requestedTicketSeller)); 
+            newTableRow.appendChild(newSellerRequest);
+            var tablenode = document.getElementById("newTicketSellerRequests");
+            tablenode.appendChild(newTableRow);
+            
+          }
+        }); 
+    })
+  }, 
+
+  watchNewlyCreatedEvents: function() {
+    TicketSalesHub.then(function(instance){
+      var event = instance.TicketEventCreatedEvent({fromBlock:0, toBlock:'latest'});
+      event.watch(function(error, result){
+          if (!error) {
+            var log = result.logs[0];
+            var noEvents = document.getElementById("noEvents");
+            if (noEvents) {
+              noEvents.parentElement.removeChild(noEvents);
+            }
+            var newTableRow = document.createElement("tr");
+            var newEventAddress = document.createElement("td");
+            var newEventName = document.createElement("td");
+            var newEventLocation = document.createElement("td");
+            var newEventTicketPrice = document.createElement("td");
+            newEventAddress.appendChild(document.createTextNode(log.args.eventCreated));
+            newEventName.appendChild(document.createTextNode(log.args.eventName));
+            newEventLocation.appendChild(document.createTextNode(log.args.eventLocation));
+            newEventTicketPrice.appendChild(document.createTextNode(log.args.theTicketPrice)); 
+            newTableRow.appendChild(newEventAddress);
+            newTableRow.appendChild(newEventName);
+            newTableRow.appendChild(newEventLocation);
+            newTableRow.appendChild(newEventTicketPrice);
+            var tablenode = document.getElementById("theEvents");
+            tablenode.appendChild(newTableRow);
+          }
+        }); 
     })
   }
 
