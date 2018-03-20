@@ -10,6 +10,7 @@ contract('TicketSales', function(accounts){
 
   let owner =  accounts[0]; //Hub & applicaiton manager
   let sellerOne = accounts[1]; //Venue
+  let thirdParty = accounts[2];
 
   /* Steps to take before each test run, deploy contract each time to start
   at same base case. */
@@ -40,6 +41,11 @@ contract('TicketSales', function(accounts){
       assert.strictEqual(req, sellerOne, "Address of requester no recorded.")
       assert.equal(numReq.toNumber(), 1, "Incorrect number of requesters recorded, should be one.");
     })
+    it("Should allow anyone to check a requested ticketseller", async function(){
+      let result = await contractHub.ticketSellerRequest({from:sellerOne});
+      let resultOne = await contractHub.isRequestedSeller(sellerOne, {from: thirdParty});
+      assert.isTrue(resultOne);
+    })
   })
 
   describe("Approving", async function(){
@@ -51,6 +57,12 @@ contract('TicketSales', function(accounts){
       let approved = log.args.newTicketSeller; 
       assert.strictEqual(approved, sellerOne, "Seller One was not approved.");
       assert.equal(numReq.toNumber(), 0, "Incorrect number of requesters, should be zero.");
+    })
+    it("Should allow anyone to check for an approved ticket selelr", async function(){
+      let result = await contractHub.ticketSellerRequest({from:sellerOne});
+      let resultOne = await contractHub.approveTicketSeller(sellerOne, {from:owner});
+      let resultTwo = await contractHub.isApprovedSeller(sellerOne, {from:thirdParty});
+      assert.isTrue(resultTwo);
     })
   })
 
@@ -64,6 +76,37 @@ contract('TicketSales', function(accounts){
       assert.strictEqual(rejected, sellerOne, "Seller One was not rejected.");
       assert.equal(numReq.toNumber(), 0, "Incorrect number of requesters, should be zero.");
     })
+    it("Should allow anyone to check if a seller is rejected", async function(){
+      let result = await contractHub.ticketSellerRequest({from:sellerOne});
+      let resultOne = await contractHub.rejectTicketSeller(sellerOne, {from:owner});
+      let resultTwo = await contractHub.isRejectedSeller(sellerOne, {from: thirdParty});
+      assert.isTrue(resultTwo);
+    })
+  })
+
+  describe("Ticket Seller Status", async function(){
+    it("Should give the correct status of address that has not requested anything yet", async function(){
+      let result = await contractHub.ticketSellerStatus(sellerOne, {from: thirdParty});
+      assert.equal(result.toNumber(), 0, "Status is not set correctly (Not Requested)")
+    })
+    it("Should give correct status to a requested ticket seller", async function(){
+      let result = await contractHub.ticketSellerRequest({from:sellerOne});
+      let resultOne = await contractHub.ticketSellerStatus(sellerOne, {from:thirdParty});
+      assert.equal(resultOne.toNumber(), 1, "Status is not set correctly (Requested).")
+    })
+    it("Should give correct status to an approved ticket seller", async function(){
+      let result = await contractHub.ticketSellerRequest({from:sellerOne});
+      let resultOne = await contractHub.approveTicketSeller(sellerOne, {from:owner});
+      let resultTwo = await contractHub.ticketSellerStatus(sellerOne, {from:thirdParty});
+      assert.equal(resultTwo.toNumber(), 2, "Status is not set correctly (Approved).");
+    })
+    it("Should give correct status to a rejected ticket seller", async function(){
+      let result = await contractHub.ticketSellerRequest({from:sellerOne});
+      let resoltOne = await contractHub.rejectTicketSeller(sellerOne, {from:owner});
+      let resultTwo = await contractHub.ticketSellerStatus(sellerOne, {from: thirdParty});
+      assert.equal(resultTwo.toNumber(), 3, "Status is not set correctly (Rejected).");
+    })
+
   })
 
   describe("Creating an event", async function(){
@@ -88,8 +131,8 @@ contract('TicketSales', function(accounts){
       let cName = await newContract.name({from:sellerOne});
       let cLocation = await newContract.location({from:sellerOne});
       let cSym = await newContract.symbol({from:sellerOne});
-      let cTotTickets = await newContract.totalTicketsAvailable({from:sellerOne});
-      let cPriceTickets = await newContract.ticketPrice({from:sellerOne});
+      let cTotTickets = await newContract.totalSupply({from:sellerOne});
+      let cPriceTickets = await newContract.theTicketPrice({from:sellerOne});
       //Check events emitted
       assert.strictEqual(eOwner, eSeller, "Ownership of new event contract was not set correctly.");
       assert.strictEqual(eSeller, sellerOne, "Seller Incorrectly Set");
