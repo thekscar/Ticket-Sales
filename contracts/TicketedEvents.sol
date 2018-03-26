@@ -45,9 +45,19 @@ contract TicketedEvents is Ownable {
   struct Tickets {
       bytes32 qrData;
       uint256 numOfTransfers;
+      bool refund; 
   }
   Tickets[] private tickets;
-  
+
+//============================================================================
+// EVENTS
+//============================================================================
+  event NewTicketPurchaseEvent(address buyer, uint256 _newTicketId);
+  event NewRefundRequestEvent(address buyer, uint256 _refundTicketId);
+  event RefundRequestProcessedEvent(address buyer, uint256 _processedTicketId);
+  event TicketTransferApprovalEvent(address buyer, address _approvedAddress, uint256 _theTicketId);
+  event TicketTransferCompletedEvent(address _newOwner, uint256 _transferredTicket);
+
 //============================================================================
 // MODIFIERS
 //============================================================================
@@ -87,7 +97,15 @@ contract TicketedEvents is Ownable {
   function totalSupply() public view returns (uint256) {
     return totalTicketsAvailable;
   }
-  
+   /*
+  * @dev Gets the ticket price of tickets to be sold
+  * @return uint256 representing the ticket price
+  */
+
+  function theTicketPrice() public view returns (uint256) {
+    return ticketPrice; 
+  }
+
   /* 
   * @ dev Gets the total amount of tickets sold so far
   * @ return uint256 representing total amount of tickets sold
@@ -127,15 +145,15 @@ contract TicketedEvents is Ownable {
   }
 
   function qrData(uint256 _ticketId) public view returns (bytes32) {
-    bytes32 data = tickets[_ticketId.sub(1)].qrData;
+    bytes32 data = tickets[_ticketId].qrData;
     require(data != 0);
     return data; 
   }
 
   /*
    * @dev Gets the approved address to take ownership of a given token ID
-   * @param _tokenId uint256 ID of the token to query the approval of
-   * @return address currently approved to take ownership of the given token ID
+   * @param _tickId uint256 ID of the ticket to query the approval of
+   * @return address currently approved to take ownership of the given ticket ID
    */
   function approvedFor(uint256 _ticketId) public view returns (address) {
     return ticketApprovals[_ticketId];
@@ -152,6 +170,13 @@ contract TicketedEvents is Ownable {
     return approvedFor(_ticketId) == _owner;
   }
 
+    /*
+   * @dev Tells whether or not a ticket is requested for refund. 
+   * @param _tokenId uint256 ID of the token to query whether or not a refund is requested
+   */
+  function isRefundRequested(uint256 _ticketId) public view returns (bool) {
+    return tickets[_ticketId].refund; 
+  }
 //============================================================================
 // TICKET TRANSFERING FUNCTIONS (TICKET SELLER)
 //============================================================================
@@ -161,7 +186,7 @@ contract TicketedEvents is Ownable {
   * @param _to address to receive the ownership of the given ticket ID
   * @param _ticketId uint256 ID of the token to be transferred
   */
-  function _transfer(address _to, uint256 _ticketId) internal onlyOwnerOf(_ticketId) {
+  function _transfer(address _to, uint256 _ticketId) public onlyOwnerOf(_ticketId) {
     clearApprovalAndTransfer(msg.sender, _to, _ticketId);
   }
   
@@ -170,26 +195,17 @@ contract TicketedEvents is Ownable {
   * @param Information for a ticket to buy (should be handled by front end)
   * @return Ticket Id created & given to msg.sender
   */
-  function buyTicket(bytes32 _ticketToBuy) public payable returns (uint256 ticketId) {
+  function buyTicket(bytes32 _ticketToBuy) public payable  {
       require(msg.value == ticketPrice);
-      uint256 newId = _mint(msg.sender, _ticketToBuy);
-      return newId;
-  }
-
-  /*
-  * @dev Mint ticket function
-  * @param _to The address that will own the minted ticket
-  * @param _ticketId uint256 ID of the ticket to be minted by the msg.sender
-  */
-  function _mint(address _to, bytes32 _qrData) internal returns (uint256 _newTicketId) {
-    require(_to != address(0));
-    Tickets memory _tickets = Tickets({
-        qrData: _qrData,
-        numOfTransfers: 1
+      Tickets memory _tickets = Tickets({
+        qrData: _ticketToBuy,
+        numOfTransfers: 1,
+        refund:false
       });
-    uint256 newTicketId = tickets.push(_tickets);
-    addTicket(msg.sender, newTicketId);
-    return newTicketId;
+      uint256 newTicketId = tickets.push(_tickets); 
+      newTicketId = newTicketId.sub(1);
+      require(addTicket(msg.sender, newTicketId));
+      NewTicketPurchaseEvent(msg.sender, newTicketId);
   }
 
   /*
@@ -197,35 +213,64 @@ contract TicketedEvents is Ownable {
   * @param _to address representing the new owner of the given token ID
   * @param _tokenId uint256 ID of the token to be added to the tokens list of the given address
   */
-  function addTicket(address _to, uint256 _ticketId) private {
+  function addTicket(address _to, uint256 _ticketId) internal returns (bool) {
     require(ticketOwner[_ticketId] == address(0));
     ticketOwner[_ticketId] = _to;
     uint256 length = balanceOfTickets(_to);
     ownedTickets[_to].push(_ticketId);
     ownedTicketsIndex[_ticketId] = length;
     totalTicketsSold = totalTicketsSold.add(1);
+    totalTicketsAvailable = totalTicketsAvailable.sub(1);
+    return true; 
   }
 
 //============================================================================
 // TICKET DESTORYING FUNCTIONS (TICKET RETURNS(?))
 //============================================================================
+ 
+  /* 
+  * @dev Allows a user to request a refund/return their ticket
+  * @param _tokenId uint256 ID of ticket 
+  */
+  function requestRefund(uint256 _ticketId) onlyOwnerOf(_ticketId) public returns (bool) {
+    require(tickets[_ticketId].refund == false);
+    tickets[_ticketId].refund = true;
+    NewRefundRequestEvent(msg.sender, _ticketId); 
+    return true; 
+  }
+
+  /* 
+  * @dev Allows a ticket seller to approve a refund request to request a refund/return their ticket
+  * @param _ticketId uint256 ID of ticket 
+  * ##NOTE## _ticketId could this variable be overwritten? 
+  */
+  function approveRefund(uint256 _ticketId) onlyOwner public returns (bool) {
+    require(tickets[_ticketId].refund == true);
+    address theBuyer = ownerOf(_ticketId);
+    require(_burn(_ticketId, theBuyer));
+    RefundRequestProcessedEvent(theBuyer, _ticketId);
+    return true; 
+  }
+
 
   /*
   * @dev Burns a specific token
-  * @param _tokenId uint256 ID of the token being burned by the msg.sender
+  * @param _ticketId uint256 ID of the ticket being burned by the msg.sender
+  * @param _ticketOwner address of the owner of the ticket since this will be initiated by the ticket seller approving the refund request
   */
-  function _burn(uint256 _ticketId) onlyOwnerOf(_ticketId) internal {
+  function _burn(uint256 _ticketId, address _ticketOwner) private returns (bool){
     if (approvedFor(_ticketId) != 0) {
-      clearApproval(msg.sender, _ticketId);
+      clearApproval(_ticketOwner, _ticketId);
     }
-    removeTicket(msg.sender, _ticketId);
+    removeTicket(_ticketOwner, _ticketId);
+    return true; 
   }
 
   
   /*
-  * @dev Internal function to remove a token ID from the list of a given address
-  * @param _from address representing the previous owner of the given token ID
-  * @param _tokenId uint256 ID of the token to be removed from the tokens list of the given address
+  * @dev Internal function to remove a ticket ID from the list of a given address
+  * @param _from address representing the previous owner of the given ticket ID
+  * @param _ticketId uint256 ID of the ticket to be removed from the tokens list of the given address
   */
   function removeTicket(address _from, uint256 _ticketId) private {
     require(ownerOf(_ticketId) == _from);
@@ -233,6 +278,20 @@ contract TicketedEvents is Ownable {
     uint256 ticketIndex = ownedTicketsIndex[_ticketId];
     uint256 lastTicketIndex = balanceOfTickets(_from).sub(1);
     uint256 lastTicket = ownedTickets[_from][lastTicketIndex];
+    
+    delete tickets[_ticketId];
+    bytes32 theData = tickets[lastTicket].qrData; 
+    uint transfers = tickets[lastTicket].numOfTransfers; 
+    bool refunds = tickets[lastTicket].refund; 
+
+    //Switching around the struct
+    Tickets memory _tickets = Tickets({
+        qrData: theData,
+        numOfTransfers: transfers,
+        refund: refunds
+      }); 
+
+    tickets[lastTicket] = _tickets; 
 
     ticketOwner[_ticketId] = 0;
     ownedTickets[_from][ticketIndex] = lastTicket;
@@ -244,7 +303,9 @@ contract TicketedEvents is Ownable {
     ownedTickets[_from].length--;
     ownedTicketsIndex[_ticketId] = 0;
     ownedTicketsIndex[lastTicket] = ticketIndex;
-    totalTicketsAvailable = totalTicketsAvailable.sub(1);
+
+    totalTicketsAvailable = totalTicketsAvailable.add(1);
+    totalTicketsSold = totalTicketsSold.sub(1);
   }
 
 
@@ -263,6 +324,7 @@ contract TicketedEvents is Ownable {
     if (approvedFor(_ticketId) != 0 || _to != 0) {
       ticketApprovals[_ticketId] = _to;
     }
+    TicketTransferApprovalEvent(msg.sender, _to, _ticketId);
   }
 
   /*
@@ -272,6 +334,7 @@ contract TicketedEvents is Ownable {
   function takeOwnership(uint256 _ticketId) public {
     require(isApprovedFor(msg.sender, _ticketId));
     clearApprovalAndTransfer(ownerOf(_ticketId), msg.sender, _ticketId);
+    TicketTransferCompletedEvent(msg.sender, _ticketId);
   }
   
   /*

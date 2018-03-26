@@ -33,16 +33,21 @@ contract TicketSalesHub is Ownable {
 
     enum States { NotRequested, Requested, Approved, Rejected }
     
-    event TicketSellerRequestEvent(address requestedTicketSeller);
-    event TicketSellerApprovedEvent(address newTicketSeller);
-    event TicketSellerRejectedEvent(address rejectedTicketSeller);
-    event TicketEventCreatedEvent(address ticketSeller, address eventCreated, string eventName, string eventLocation, string eventSymbol, uint256 theTotalTicketsAvailable, uint256 theTicketPrice);
-    
     //Should I use this as a fail safe to ensure that I could catch all the requestors?
     uint256 public numRequesters;
 
     //Trusted event factory interface
     EventFactoryInterface f; 
+
+//============================================================================
+// EVENTS
+//============================================================================
+
+    event TicketSellerRequestEvent(address requestedTicketSeller);
+    event TicketSellerApprovedEvent(address newTicketSeller);
+    event TicketSellerRejectedEvent(address rejectedTicketSeller);
+    event TicketEventCreatedEvent(address ticketSeller, address eventCreated, string eventName, string eventLocation, string eventSymbol, uint256 theTotalTicketsAvailable, uint256 theTicketPrice);
+    
 
 //============================================================================
 // MODIFIERS
@@ -128,7 +133,12 @@ contract TicketSalesHub is Ownable {
 
 /*
   * @dev Function for approved ticket sellers to create an event
-  * @param requester address of ticket seller
+  * @param _eventName name of event
+  * @param _eventLocation location of event
+  * @param _eventSymbol similar to an ERC20 token symbol for secondary market (?)
+  * @param _totalTicketsAvailable the total number of tickets available for an event
+  * @param _theTicketPrice the price of an individual ticket per event
+  * ##NOTE## Need to refactor and think about multiple levels of tickets for events - VIP, General Admission, etc. 
 */
     
     function createEventSale(string _eventName, string _eventLocation, string _eventSymbol, uint256 _totalTicketsAvailable, uint256 _theTicketPrice)

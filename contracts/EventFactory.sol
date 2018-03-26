@@ -5,7 +5,15 @@ import "./EventFactoryInterface.sol";
 
 contract EventFactory is EventFactoryInterface {
     
-    event LogNewEvent(address ticketSeller, address newEvent);
+/*
+  * @dev Function for approved ticket sellers to create an event
+  * @param _eventName name of event
+  * @param _eventLocation location of event
+  * @param _eventSymbol similar to an ERC20 token symbol for secondary market (?)
+  * @param _totalTicketsAvailable the total number of tickets available for an event
+  * @param _theTicketPrice the price of an individual ticket per event
+  * ##NOTE## Need to refactor and think about multiple levels of tickets for events - VIP, General Admission, etc. 
+*/
     
     function newEventCreation(address _ticketSeller, string _eventName, string _eventLocation, string _eventSymbol, uint256 _totalTicketsAvailable, uint256 _ticketPrice)  
         public

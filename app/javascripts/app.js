@@ -3,7 +3,8 @@ import "../stylesheets/app.css";
 
 // Import libraries we need.
 import { default as Web3} from 'web3';
-import { default as contract } from 'truffle-contract'
+import { default as contract } from 'truffle-contract';
+import { default as $ } from 'jquery';
 
 // Import our contract artifacts and turn them into usable abstractions.
 import ticketsaleshub_artifacts from '../../build/contracts/TicketSalesHub.json'
@@ -139,8 +140,9 @@ window.App = {
       return hub.ticketSellerRequest({from:account, gas:200000})
     }).then(function(result){
       //Only start watching if not already. 
-      console.log("The ticket seller request event ", result);
-      if( document.getElementById("noSellers"){
+      
+      var started = document.getElementById("noSellers");
+      if(started){
         self.watchTicketSellerRequest(); 
       }
       self.setRequestStatus("Your request is confirmed, please wait for the application manager to approve.")
@@ -198,7 +200,7 @@ window.App = {
       return hub.createEventSale(eName, eLocation, eSym, eTotalTickets, eTicketPrice, {from:account})
     }).then(function(result){
       console.log("The event created result ", result);
-      if( document.getElementById("noEvents"){
+      if(document.getElementById("noEvents")){
         self.watchNewlyCreatedEvents(); 
       }
       
@@ -230,33 +232,30 @@ window.App = {
   }, 
 
   watchTicketSellerRequest: function() {
-    TicketSalesHub.then(function(instance){
+    TicketSalesHub.deployed().then(function(instance){
       var event = instance.TicketSellerRequestEvent({fromBlock:0, toBlock:'latest'});
       event.watch(function(error, result){
           if (!error) {
-            var log = result.logs[0];
             var noSellers = document.getElementById("noSellers");
             if (noSellers) {
               noSellers.parentElement.removeChild(noSellers);
             }
             var newTableRow = document.createElement("tr");
             var newSellerRequest = document.createElement("td");
-            newSellerRequest.appendChild(document.createTextNode(log.args.requestedTicketSeller)); 
+            newSellerRequest.appendChild(document.createTextNode(result.args.requestedTicketSeller)); 
             newTableRow.appendChild(newSellerRequest);
             var tablenode = document.getElementById("newTicketSellerRequests");
             tablenode.appendChild(newTableRow);
-            
           }
-        }); 
+        })
     })
   }, 
 
   watchNewlyCreatedEvents: function() {
-    TicketSalesHub.then(function(instance){
+    TicketSalesHub.deployed().then(function(instance){
       var event = instance.TicketEventCreatedEvent({fromBlock:0, toBlock:'latest'});
       event.watch(function(error, result){
           if (!error) {
-            var log = result.logs[0];
             var noEvents = document.getElementById("noEvents");
             if (noEvents) {
               noEvents.parentElement.removeChild(noEvents);
@@ -266,10 +265,10 @@ window.App = {
             var newEventName = document.createElement("td");
             var newEventLocation = document.createElement("td");
             var newEventTicketPrice = document.createElement("td");
-            newEventAddress.appendChild(document.createTextNode(log.args.eventCreated));
-            newEventName.appendChild(document.createTextNode(log.args.eventName));
-            newEventLocation.appendChild(document.createTextNode(log.args.eventLocation));
-            newEventTicketPrice.appendChild(document.createTextNode(log.args.theTicketPrice)); 
+            newEventAddress.appendChild(document.createTextNode(result.args.eventCreated));
+            newEventName.appendChild(document.createTextNode(result.args.eventName));
+            newEventLocation.appendChild(document.createTextNode(result.args.eventLocation));
+            newEventTicketPrice.appendChild(document.createTextNode(result.args.theTicketPrice)); 
             newTableRow.appendChild(newEventAddress);
             newTableRow.appendChild(newEventName);
             newTableRow.appendChild(newEventLocation);
