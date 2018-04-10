@@ -6,7 +6,7 @@ pragma solidity ^0.4.17;
  * @title Event Factory.
  * Event Factory in which ERC721's would represent tickets to an event.
 */
-import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./Ownable.sol";
 import '../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol';
 
 

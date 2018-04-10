@@ -7,7 +7,7 @@ pragma solidity ^0.4.17;
 */
 
 import "./EventFactoryInterface.sol"; 
-import "../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./Ownable.sol";
 import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract TicketSalesHub is Ownable {
