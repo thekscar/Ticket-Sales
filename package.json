@@ -37,6 +37,7 @@
     "webpack-dev-server": "^2.3.0"
   },
   "dependencies": {
+    "jquery": "^3.3.1",
     "zeppelin-solidity": "^1.7.0"
   }
 }
